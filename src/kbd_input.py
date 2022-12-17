@@ -3,11 +3,13 @@ from readchar import readkey, key
 from ansi_escapes import ansiEscapes
 from src.history import History
 from src.char_buffer import CharBuffer
+from src.auto_completion import AutoCompletion
 
 class KbdInput:
   def __init__(self, buf: CharBuffer, history: History):
     self.buf = buf
     self.history = history
+    self.auto_completion = AutoCompletion(buf, history)
   
   def start_read_loop(self):
     while (True):
@@ -43,6 +45,9 @@ class KbdInput:
     else:
       try:
         self.buf.insert(seq)
+        candiates = self.auto_completion.get_candiates()
+        if len(candiates) > 0:
+          print('candidates: ' + '\n'.join(candiates))
         self.write(seq)
       except:
         pass # TODO

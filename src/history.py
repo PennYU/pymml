@@ -42,7 +42,18 @@ class History:
     if self.count == 0:
         raise Exception ("no histories")
     return self.buffer[self.high]
-
+  
+  def get_candiates(self, prefix: str):
+    canditates = []
+    idx = self.low
+    num = self.count
+    while num > 0:
+      val = self.buffer[idx]
+      if val.startswith(prefix):
+        canditates.append(val)
+      idx = (idx + 1) % self.size
+      num -= 1
+    return canditates
 
   def __iter__(self):
     """Return elements in the circular buffer in order using iterator."""
