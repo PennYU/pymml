@@ -1,12 +1,13 @@
+import sys
 from readchar import readkey, key
 from ansi_escapes import ansiEscapes
+from src.history import History
 from src.char_buffer import CharBuffer
 
-import sys
-
 class KbdInput:
-  def __init__(self, buf: CharBuffer):
+  def __init__(self, buf: CharBuffer, history: History):
     self.buf = buf
+    self.history = history
   
   def start_read_loop(self):
     while (True):
@@ -14,20 +15,37 @@ class KbdInput:
   
   def handle_input(self, seq):
     if (seq == '\n'):
-      pass
+      cmd = self.buf.to_string()
+      print('input:' + cmd)
+      self.history.add(cmd)
+      self.buf.clear()
     elif (seq == key.BACKSPACE): # Backspace
-      self.write(ansiEscapes.cursorBackward(1))
-      self.write(ansiEscapes.eraseEndLine)
-      # self.buf.pop() # TODO
+      try:
+        self.buf.delete()
+        self.write(ansiEscapes.cursorBackward(1))
+        self.write(ansiEscapes.eraseEndLine)
+      except:
+        pass # TODO
     elif (seq == key.LEFT):
-      self.write(ansiEscapes.cursorBackward(1))
+      try:
+        self.buf.move_backward()
+        self.write(ansiEscapes.cursorBackward(1))
+      except:
+        pass # TODO
     elif (seq == key.RIGHT):
-      self.write(ansiEscapes.cursorForward(1))
+      try:
+        self.buf.move_forward()
+        self.write(ansiEscapes.cursorForward(1))
+      except:
+        pass
     elif (seq[0] == key.ESC):
-      pass
+      pass # TODO
     else:
-      # self.buf.append(seq)
-      self.write(seq)
+      try:
+        self.buf.insert(seq)
+        self.write(seq)
+      except:
+        pass # TODO
   
   def write(self, seq):
       print(seq, end='', flush=True)

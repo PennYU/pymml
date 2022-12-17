@@ -2,8 +2,8 @@ class CharBuffer:
 
   def __init__(self, size):
     if size <= 0:
-     raise Exception ("size should be a positive") 
-    self.buf = [None] * size
+     raise Exception ("size should be positive") 
+    self.buf = [""] * size
     self.size = size
     self.cursor = 0
     self.count = 0
@@ -18,13 +18,11 @@ class CharBuffer:
     return self.cursor <= 0
 
   def at_tail(self):
-    return self.cursor >= self.size
+    return self.cursor >= self.count
 
   def insert(self, char):
     if self.is_full():
       raise Exception ("buffer is full")
-    if self.at_tail():
-      raise Exception ("at tail")
     if not len(char) == 1:
       raise Exception ("{char} is not a char")
     if self.cursor < self.count:
@@ -38,7 +36,7 @@ class CharBuffer:
     self.cursor += 1
     self.count += 1
 
-  # 删除光标前一个字符
+  # delete the char in front of cursor 
   def delete(self):
     if self.is_empty():
       raise Exception ("buffer is empty") 
@@ -47,12 +45,14 @@ class CharBuffer:
     if self.cursor < self.count:
       for ind in range(self.cursor, self.count, 1):
         self.buf[ind - 1] = self.buf[ind]
-      self.cursor -= 1
-      self.count -= 1
+    elif self.cursor == self.count:
+      pass
     else:
-      raise Exception ("unknown error")  
-    
-  # 删除光标后一个字符
+      raise Exception ("index {} is out of range {}".format(self.cursor, self.count))
+    self.cursor -= 1
+    self.count -= 1
+
+  # delete the char after cursor 
   def delete_after_cursor(self):
     if self.is_empty():
       raise Exception ("buffer is empty") 
